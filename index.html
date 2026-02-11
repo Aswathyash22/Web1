@@ -23,7 +23,7 @@
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-             position: relative;
+            position: relative;
             overflow: hidden;
         }
 
@@ -33,7 +33,7 @@
             margin-bottom: 30px;
         }
 
-         /* GIF hidden initially */
+        /* GIF hidden initially */
         .gif {
             width: 200px;
             height: auto;
@@ -50,7 +50,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-             position: relative;
+            position: relative;
         }
 
         .yes-btn {
@@ -75,18 +75,31 @@
             color: #ff3c78;
             margin-top: 20px;
         }
+
+        /* Canvas for hearts confetti */
+        #confettiCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>💌WILLIAM! Will You Be My Valentine? 💌</h1>
-         <img id="yesGif" src="valentine.gif" alt="cute hearts" class="gif">
+        <h1>💌 William! Will You Be My Valentine? 💌</h1>
+        <img id="yesGif" src="valentine.gif" alt="cute hearts" class="gif">
 
         <div class="buttons">
             <button id="yesBtn" class="yes-btn">Yes 💖</button>
             <button id="noBtn" class="no-btn">No 😢</button>
         </div>
         <p id="response" class="response"></p>
+
+        <!-- Canvas for heart confetti -->
+        <canvas id="confettiCanvas"></canvas>
     </div>
 
     <script>
@@ -94,28 +107,18 @@
         const noBtn = document.getElementById("noBtn");
         const response = document.getElementById("response");
         const yesGif = document.getElementById("yesGif");
- const container = document.querySelector(".container");
+        const container = document.querySelector(".container");
+        const canvas = document.getElementById('confettiCanvas');
+        const ctx = canvas.getContext('2d');
 
- 
-        yesBtn.addEventListener("click", () => {
-            response.textContent = "Yay! 💖 ASWATHY will be so happy... You said YES!";
-             yesGif.style.display = "block";
-        });
-
-        noBtn.addEventListener("click", () => {
-            response.textContent = "Sorry!You are dead😌";
-             yesGif.style.display = "none";
-        });
-
-         noBtn.addEventListener("mouseenter", () => {
+        // No button evades mouse
+        noBtn.addEventListener("mouseenter", () => {
             const containerRect = container.getBoundingClientRect();
             const btnRect = noBtn.getBoundingClientRect();
 
-            // Max random X/Y within container
             const maxX = containerRect.width - btnRect.width;
             const maxY = containerRect.height - btnRect.height;
 
-            // Random position within container
             const randomX = Math.random() * maxX;
             const randomY = Math.random() * maxY;
 
@@ -123,8 +126,81 @@
             noBtn.style.left = randomX + "px";
             noBtn.style.top = randomY + "px";
         });
+
+        // Heart confetti
+        function launchHearts() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const heartsCount = 100;
+            const hearts = [];
+
+            for(let i=0; i<heartsCount; i++){
+                hearts.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 2 + 1,
+                    color: `hsl(${Math.random()*360}, 100%, 70%)`,
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                hearts.forEach((h) => {
+                    ctx.beginPath();
+                    ctx.moveTo(h.x, h.y);
+                    ctx.fillStyle = h.color;
+                    ctx.font = h.size + "px Arial";
+                    ctx.fillText("❤️", h.x, h.y);
+                    ctx.closePath();
+                });
+                update();
+            }
+
+            function update() {
+                hearts.forEach((h, i) => {
+                    h.tiltAngle += h.tiltAngleIncremental;
+                    h.y += h.speed;
+                    h.x += Math.sin(h.tiltAngle) * 2;
+
+                    if(h.y > canvas.height){
+                        hearts[i] = {
+                            x: Math.random() * canvas.width,
+                            y: -20,
+                            size: h.size,
+                            speed: h.speed,
+                            color: h.color,
+                            tilt: Math.random() * 10 - 10,
+                            tiltAngleIncremental: h.tiltAngleIncremental,
+                            tiltAngle: 0
+                        };
+                    }
+                });
+            }
+
+            const animation = setInterval(draw, 20);
+            setTimeout(() => clearInterval(animation), 5000);
+        }
+
+        // Yes button click
+        yesBtn.addEventListener("click", () => {
+            response.textContent = "Yay! 💖 Aswathy will be so happy... You said yes!";
+            yesGif.style.display = "block";
+            launchHearts(); // show heart confetti
+        });
+
+        // No button click
+        noBtn.addEventListener("click", () => {
+            response.textContent = "Sorry! You are dead 😌";
+            yesGif.style.display = "none";
+        });
     </script>
 </body>
 </html>
+
 
 
