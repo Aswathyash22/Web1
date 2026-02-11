@@ -26,6 +26,14 @@
             width: 600px; /* increased width to fit heading in one line */
         }
 
+        /* Top GIF styling */
+        .top-gif {
+            width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto; /* center horizontally and space below */
+        }
+
         h1 {
             color: #ff3c78;
             margin-bottom: 30px;
@@ -85,13 +93,19 @@
 </head>
 <body>
     <div class="container">
+        <!-- New top GIF above heading -->
+        <img id="topGif" src="Topgif.gif" alt="valentine top gif" class="top-gif">
+
         <h1 id="heading">💌 WILLIAM! Will You Be My Valentine? 💌</h1>
+
+        <!-- Main GIF that appears after Yes click -->
         <img id="yesGif" src="valentine.gif" alt="cute hearts" class="gif">
 
         <div id="buttonsDiv" class="buttons">
             <button id="yesBtn" class="yes-btn">Yes 💖</button>
             <button id="noBtn" class="no-btn">No 😢</button>
         </div>
+
         <p id="response" class="response"></p>
 
         <canvas id="confettiCanvas"></canvas>
@@ -162,14 +176,14 @@
             setTimeout(() => clearInterval(animation), 5000); // stop after 5s
         }
 
-        // Yes button click
-        yesBtn.addEventListener("click", () => {
-            heading.style.display = "none";       // hide heading
-            buttonsDiv.style.display = "none";    // hide buttons
-            yesGif.style.display = "block";       // show GIF
-            response.textContent = "YAY! 💖 ASWATHY will be so happy... You said YES!";
-            launchHearts();                       // show heart confetti
-        });
+       yesBtn.addEventListener("click", () => {
+    heading.style.display = "none";       // hide heading
+    buttonsDiv.style.display = "none";    // hide buttons
+    yesGif.style.display = "block";       // show main GIF
+    document.getElementById("topGif").style.display = "none"; // hide top GIF
+    response.textContent = "YAY!💖 ASWATHY will be so happy... You said YES!";
+    launchHearts();                       // show heart confetti
+});
 
         // No button click
         noBtn.addEventListener("click", () => {
